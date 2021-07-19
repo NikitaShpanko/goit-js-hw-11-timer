@@ -53,8 +53,13 @@ class CountdownTimer {
 
 const remark = document.querySelector(".remarks");
 
-let defaultText = localStorage.getItem(LOCAL_FIELD);
+//let defaultText = localStorage.getItem(LOCAL_FIELD);
+let defaultText = new URL(window.location).searchParams.get("date");
 if (!defaultText) defaultText = `Jan 1, ${new Date().getFullYear() + 1}`;
+
+const input = document.querySelector("#date-input");
+input.value = defaultText;
+input.focus();
 
 const timer = new CountdownTimer({
   selector: "#timer-1",
@@ -62,13 +67,14 @@ const timer = new CountdownTimer({
 
   logTargetDate: (date) => {
     remark.textContent = `Until ${date}`;
+    const urlsp = new URLSearchParams();
+    urlsp.set("date", input.value);
+    if ("?" + urlsp !== window.location.search)
+      window.location.search = new URLSearchParams({ date: input.value });
   },
 });
 
-const input = document.querySelector("#date-input");
-input.value = defaultText;
-
 input.addEventListener("input", () => {
   timer.date = new Date(input.value);
-  localStorage.setItem(LOCAL_FIELD, input.value);
+  //localStorage.setItem(LOCAL_FIELD, input.value);
 });
