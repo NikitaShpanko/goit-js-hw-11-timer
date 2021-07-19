@@ -8,6 +8,7 @@ class CountdownTimer {
   static FIELDS = Object.keys(CountdownTimer.FORMULAS);
   #DOMelements = {};
   #targetTime;
+  #timer = 0;
   constructor(objParams) {
     const parent = document.querySelector(objParams.selector);
     for (const field of CountdownTimer.FIELDS) {
@@ -26,16 +27,18 @@ class CountdownTimer {
     }
     //console.log(nowTime % 1000);
     //console.log(this.#targetTime - nowTime);
-    setTimeout(() => {
+    this.#timer = setTimeout(() => {
       this.updateTimer();
     }, 1000 - (nowTime % 1000));
   }
 
   set date(newDate) {
-    if (newDate && newDate instanceof Date) {
+    if (newDate && newDate instanceof Date && newDate.getTime() !== NaN) {
       this.#targetTime = newDate.getTime();
+      if (this.#timer) clearTimeout(this.#timer);
       this.updateTimer();
-    }
+      //return true;
+    } //else return false;
   }
 
   get date() {
