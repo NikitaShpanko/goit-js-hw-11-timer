@@ -1,3 +1,5 @@
+const LOCAL_FIELD = "dateText";
+
 class CountdownTimer {
   static FORMULAS = {
     days: (timeSec) => Math.floor(timeSec / (60 * 60 * 24)),
@@ -9,12 +11,14 @@ class CountdownTimer {
   #DOMelements = {};
   #targetTime;
   #timer = 0;
+  #logTargetDate;
   constructor(objParams) {
     const parent = document.querySelector(objParams.selector);
     for (const field of CountdownTimer.FIELDS) {
       const elem = parent.querySelector(`[data-value="${field}"]`);
       if (elem) this.#DOMelements[field] = elem;
     }
+    this.#logTargetDate = objParams.logTargetDate;
     this.date = objParams.targetDate;
   }
 
@@ -33,12 +37,13 @@ class CountdownTimer {
   }
 
   set date(newDate) {
-    if (newDate && newDate instanceof Date && newDate.getTime() !== NaN) {
+    if (newDate && newDate instanceof Date && !isNaN(newDate.getTime())) {
       this.#targetTime = newDate.getTime();
+      if (typeof this.#logTargetDate === "function")
+        this.#logTargetDate(newDate);
       if (this.#timer) clearTimeout(this.#timer);
       this.updateTimer();
-      //return true;
-    } //else return false;
+    }
   }
 
   get date() {
@@ -46,12 +51,24 @@ class CountdownTimer {
   }
 }
 
+const remark = document.querySelector(".remarks");
+
+let defaultText = localStorage.getItem(LOCAL_FIELD);
+if (!defaultText) defaultText = `Jan 1, ${new Date().getFullYear() + 1}`;
+
 const timer = new CountdownTimer({
   selector: "#timer-1",
-  targetDate: new Date("Sep 27, 2021"),
+  targetDate: new Date(defaultText),
+
+  logTargetDate: (date) => {
+    remark.textContent = `Until ${date}`;
+  },
 });
 
-const remark = document.createElement("p");
-remark.className = "remarks";
-remark.textContent = `Until ${timer.date}`;
-document.querySelector("body").append(remark);
+const input = document.querySelector("#date-input");
+input.value = defaultText;
+
+input.addEventListener("input", () => {
+  timer.date = new Date(input.value);
+  localStorage.setItem(LOCAL_FIELD, input.value);
+});
