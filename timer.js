@@ -1,4 +1,5 @@
-const LOCAL_FIELD = "dateText";
+const SESSION_TEXT = "dateText";
+const LOCAL_LIVE = "liveRefresh";
 
 class CountdownTimer {
   static FORMULAS = {
@@ -53,8 +54,8 @@ class CountdownTimer {
 
 const remark = document.querySelector(".remarks");
 
-//let defaultText = localStorage.getItem(LOCAL_FIELD);
 let defaultText = new URL(window.location).searchParams.get("date");
+if (!defaultText) defaultText = sessionStorage.getItem(SESSION_TEXT);
 if (!defaultText) defaultText = `Jan 1, ${new Date().getFullYear() + 1}`;
 
 const input = document.querySelector("#date-input");
@@ -67,14 +68,22 @@ const timer = new CountdownTimer({
 
   logTargetDate: (date) => {
     remark.textContent = `Until ${date}`;
-    const urlsp = new URLSearchParams();
-    urlsp.set("date", input.value);
-    if ("?" + urlsp !== window.location.search)
-      window.location.search = new URLSearchParams({ date: input.value });
   },
 });
 
-input.addEventListener("input", () => {
-  timer.date = new Date(input.value);
-  //localStorage.setItem(LOCAL_FIELD, input.value);
+const liveRefresh = document.querySelector("#live-refresh");
+liveRefresh.checked = localStorage.getItem(LOCAL_LIVE) === "true";
+
+liveRefresh.addEventListener("change", () => {
+  refreshText();
+  localStorage.setItem(LOCAL_LIVE, liveRefresh.checked);
 });
+
+input.addEventListener("input", () => {
+  refreshText();
+  sessionStorage.setItem(SESSION_TEXT, input.value);
+});
+
+function refreshText() {
+  if (liveRefresh.checked) timer.date = new Date(input.value);
+}

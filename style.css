@@ -14,7 +14,19 @@
   font-size: 16px;
 }
 
-input {
+#date-input {
   font-size: 36px;
   margin-left: 20px;
+}
+
+.form-controls {
+  margin-left: 30px;
+  margin-top: 10px;
+  font-size: 24px;
+}
+
+.form-controls button {
+  font-size: inherit;
+  padding: 10px 20px;
+  margin-left: 30px;
 }

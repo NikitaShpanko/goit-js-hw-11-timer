@@ -30,7 +30,16 @@
       </div>
     </div>
     <p class="remarks"></p>
-    <input type="text" id="date-input" />
+    <form action="?">
+      <input type="text" name="date" id="date-input" />
+      <div class="form-controls">
+        <label>
+          <input type="checkbox" id="live-refresh" />
+          Live Refresh
+        </label>
+        <button type="submit">Set Target Date!</button>
+      </div>
+    </form>
     <script src="./timer.js"></script>
   </body>
 </html>
