@@ -14,8 +14,7 @@ class CountdownTimer {
       const elem = parent.querySelector(`[data-value="${field}"]`);
       if (elem) this.#DOMelements[field] = elem;
     }
-    this.#targetTime = objParams.targetDate.getTime();
-    this.updateTimer();
+    this.date = objParams.targetDate;
   }
 
   updateTimer() {
@@ -31,9 +30,25 @@ class CountdownTimer {
       this.updateTimer();
     }, 1000 - (nowTime % 1000));
   }
+
+  set date(newDate) {
+    if (newDate && newDate instanceof Date) {
+      this.#targetTime = newDate.getTime();
+      this.updateTimer();
+    }
+  }
+
+  get date() {
+    return new Date(this.#targetTime);
+  }
 }
 
-new CountdownTimer({
+const timer = new CountdownTimer({
   selector: "#timer-1",
   targetDate: new Date("Sep 27, 2021"),
 });
+
+const remark = document.createElement("p");
+remark.className = "remarks";
+remark.textContent = `Until ${timer.date}`;
+document.querySelector("body").append(remark);
