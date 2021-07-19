@@ -1,10 +1,9 @@
 class CountdownTimer {
   static FORMULAS = {
-    days: (time) => Math.floor(time / (1000 * 60 * 60 * 24)),
-    hours: (time) =>
-      Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-    mins: (time) => Math.floor((time % (1000 * 60 * 60)) / (1000 * 60)),
-    secs: (time) => Math.floor((time % (1000 * 60)) / 1000),
+    days: (timeSec) => Math.floor(timeSec / (60 * 60 * 24)),
+    hours: (timeSec) => Math.floor((timeSec % (60 * 60 * 24)) / (60 * 60)),
+    mins: (timeSec) => Math.floor((timeSec % (60 * 60)) / 60),
+    secs: (timeSec) => timeSec % 60,
   };
   static FIELDS = Object.keys(CountdownTimer.FORMULAS);
   #DOMelements = {};
@@ -22,7 +21,9 @@ class CountdownTimer {
   updateTimer() {
     const nowTime = Date.now();
     for (const [key, el] of Object.entries(this.#DOMelements)) {
-      el.textContent = CountdownTimer.FORMULAS[key](this.#targetTime - nowTime);
+      el.textContent = CountdownTimer.FORMULAS[key](
+        Math.round((this.#targetTime - nowTime) / 1000)
+      );
     }
     //console.log(nowTime % 1000);
     //console.log(this.#targetTime - nowTime);
