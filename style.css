@@ -1,0 +1,8 @@
+body {
+  font-size: 48px;
+}
+
+.value {
+  display: inline-block;
+  min-width: 50px;
+}
