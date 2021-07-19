@@ -1,8 +1,14 @@
-body {
+.timer {
   font-size: 48px;
 }
 
 .value {
   display: inline-block;
-  min-width: 50px;
+  width: 50px;
+  margin-right: 5px;
+  text-align: right;
+}
+
+.remarks {
+  font-size: 12px;
 }
