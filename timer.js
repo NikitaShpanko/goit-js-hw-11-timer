@@ -1,5 +1,5 @@
-const SESSION_TEXT = "dateText";
-const LOCAL_LIVE = "liveRefresh";
+// const SESSION_TEXT = "dateText";
+//const LOCAL_LIVE = "liveRefresh";
 
 class CountdownTimer {
   static FORMULAS = {
@@ -55,12 +55,8 @@ class CountdownTimer {
 const remark = document.querySelector(".remarks");
 
 let defaultText = new URL(window.location).searchParams.get("date");
-if (!defaultText) defaultText = sessionStorage.getItem(SESSION_TEXT);
+// if (!defaultText) defaultText = sessionStorage.getItem(SESSION_TEXT);
 if (!defaultText) defaultText = `Jan 1, ${new Date().getFullYear() + 1}`;
-
-const input = document.querySelector("#date-input");
-input.value = defaultText;
-input.focus();
 
 const timer = new CountdownTimer({
   selector: "#timer-1",
@@ -71,19 +67,44 @@ const timer = new CountdownTimer({
   },
 });
 
-const liveRefresh = document.querySelector("#live-refresh");
-liveRefresh.checked = localStorage.getItem(LOCAL_LIVE) === "true";
+//const liveRefresh = document.querySelector("#live-refresh");
+//liveRefresh.checked = localStorage.getItem(LOCAL_LIVE) === "true";
 
-liveRefresh.addEventListener("change", () => {
-  refreshText();
-  localStorage.setItem(LOCAL_LIVE, liveRefresh.checked);
+// liveRefresh.addEventListener("change", () => {
+//   refreshText();
+//   localStorage.setItem(LOCAL_LIVE, liveRefresh.checked);
+// });
+
+const form = document.querySelector("form");
+form.addEventListener("submit", (e) => {
+  if (!isDateText(input.value)) e.preventDefault();
+  if (input.value === "") window.location = window.location.origin;
 });
 
-input.addEventListener("input", () => {
-  refreshText();
-  sessionStorage.setItem(SESSION_TEXT, input.value);
-});
+const submit = form.querySelector('[type="submit"]');
 
-function refreshText() {
-  if (liveRefresh.checked) timer.date = new Date(input.value);
+const input = form.querySelector("#date-input");
+input.value = defaultText;
+input.focus();
+checkText(); // will catch invalid input from the search string
+input.addEventListener("input", checkText);
+
+function isDateText(text) {
+  return !isNaN(new Date(text).getTime());
+}
+
+function checkText() {
+  if (isDateText(input.value) || input.value.length === 0) {
+    submit.removeAttribute("disabled");
+    input.classList.remove("invalid");
+    if (input.value !== defaultText && input.value.length) {
+      input.classList.add("valid");
+    } else {
+      input.classList.remove("valid");
+    }
+  } else {
+    submit.setAttribute("disabled", "");
+    input.classList.add("invalid");
+    input.classList.remove("valid");
+  }
 }
