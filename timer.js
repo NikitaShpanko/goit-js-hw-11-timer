@@ -1,5 +1,5 @@
-// const SESSION_TEXT = "dateText";
-//const LOCAL_LIVE = "liveRefresh";
+const LOCAL_LIVE = "liveRefresh";
+const DEFAULT_TEXT = `Jan 1, ${new Date().getFullYear() + 1}`;
 
 class CountdownTimer {
   static FORMULAS = {
@@ -55,8 +55,7 @@ class CountdownTimer {
 const remark = document.querySelector(".remarks");
 
 let defaultText = new URL(window.location).searchParams.get("date");
-// if (!defaultText) defaultText = sessionStorage.getItem(SESSION_TEXT);
-if (!defaultText) defaultText = `Jan 1, ${new Date().getFullYear() + 1}`;
+if (!defaultText) defaultText = DEFAULT_TEXT;
 
 const timer = new CountdownTimer({
   selector: "#timer-1",
@@ -67,14 +66,6 @@ const timer = new CountdownTimer({
   },
 });
 
-//const liveRefresh = document.querySelector("#live-refresh");
-//liveRefresh.checked = localStorage.getItem(LOCAL_LIVE) === "true";
-
-// liveRefresh.addEventListener("change", () => {
-//   refreshText();
-//   localStorage.setItem(LOCAL_LIVE, liveRefresh.checked);
-// });
-
 const form = document.querySelector("form");
 form.addEventListener("submit", (e) => {
   if (!isDateText(input.value)) e.preventDefault();
@@ -82,6 +73,14 @@ form.addEventListener("submit", (e) => {
 });
 
 const submit = form.querySelector('[type="submit"]');
+
+const liveRefresh = form.querySelector("#live-refresh");
+liveRefresh.checked = localStorage.getItem(LOCAL_LIVE) === "true";
+
+liveRefresh.addEventListener("change", () => {
+  refreshText();
+  localStorage.setItem(LOCAL_LIVE, liveRefresh.checked);
+});
 
 const input = form.querySelector("#date-input");
 input.value = defaultText;
@@ -95,6 +94,7 @@ function isDateText(text) {
 
 function checkText() {
   if (isDateText(input.value) || input.value.length === 0) {
+    refreshText();
     submit.removeAttribute("disabled");
     input.classList.remove("invalid");
     if (input.value !== defaultText && input.value.length) {
@@ -107,4 +107,9 @@ function checkText() {
     input.classList.add("invalid");
     input.classList.remove("valid");
   }
+}
+
+function refreshText() {
+  if (liveRefresh.checked)
+    timer.date = new Date(input.value.length ? input.value : DEFAULT_TEXT);
 }
